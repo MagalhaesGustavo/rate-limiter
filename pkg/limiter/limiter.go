@@ -58,12 +58,12 @@ func (limiter *RateLimiter) getKey(apiKey, ip string) (string, string) {
 
 func (limiter *RateLimiter) processRequest(w http.ResponseWriter, key, keyType string) bool {
 	if limiter.isBlocked(key) {
-		http.Error(w, "You have reached the maximum number of requests allowed within a certain time frame", http.StatusTooManyRequests)
+		http.Error(w, "you have reached the maximum number of requests or actions allowed within a certain time frame", http.StatusTooManyRequests)
 		return false
 	}
 	if limiter.checkRateLimit(key, keyType) {
 		limiter.block(key, keyType)
-		http.Error(w, "You have reached the maximum number of requests allowed within a certain time frame", http.StatusTooManyRequests)
+		http.Error(w, "you have reached the maximum number of requests or actions allowed within a certain time frame", http.StatusTooManyRequests)
 		return false
 	}
 	return true
