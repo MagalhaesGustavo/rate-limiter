@@ -21,7 +21,7 @@ func main() {
 
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
-	router.Use(rateLimiter.RateLimitHandler)
+	router.Use(rateLimiter.LimitHandler)
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello, world!"))
