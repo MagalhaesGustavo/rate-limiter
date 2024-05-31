@@ -32,3 +32,19 @@ func LoadConfig(path string) (*Conf, error) {
 
 	return configuration, nil
 }
+
+func LoadConfigTest() (*Conf, error) {
+	var configuration *Conf
+	viper.SetConfigFile(".env")
+	viper.AutomaticEnv()
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(err)
+	}
+	err = viper.Unmarshal(&configuration)
+	if err != nil {
+		panic(err)
+	}
+
+	return configuration, nil
+}

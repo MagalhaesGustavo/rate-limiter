@@ -19,7 +19,7 @@ func TestMain(t *testing.T) {
 	ts := httptest.NewServer(router)
 	defer ts.Close()
 
-	conf, err := configs.LoadConfig(".")
+	conf, err := configs.LoadConfigTest()
 	if err != nil {
 		panic(err)
 	}
