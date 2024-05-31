@@ -21,8 +21,15 @@ go mod tidy
 go run main.go
 ```
 
-5. Para rodar os testes da aplicação navegue até `/cmd/server` e execute
+5. Para testar a aplicação faça uma requisição HTTP GET
+
+```
+Endereco: http://localhost:8080
+```
+
+6. Para rodar os testes da aplicação navegue até `/cmd/server` e execute
 
 ```
 go test -v
 ```
+
