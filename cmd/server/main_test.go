@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/magalhaesgustavo/rate-limiter/pkg/limiter"
+	"github.com/magalhaesgustavo/rate-limiter/cmd/configs"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,6 +18,11 @@ func TestMain(t *testing.T) {
 	router := setupRouter()
 	ts := httptest.NewServer(router)
 	defer ts.Close()
+
+	conf, err := configs.LoadConfig(".")
+	if err != nil {
+		panic(err)
+	}
 
 	// Test with a valid API_KEY
 	t.Run("Valid API_KEY", func(t *testing.T) {
@@ -32,7 +38,7 @@ func TestMain(t *testing.T) {
 				t.Fatalf("Failed to read response body: %v", err)
 			}
 
-			if i < 5 {
+			if i < conf.RequestsByToken {
 				assert.Equal(t, http.StatusOK, resp.StatusCode, "Expected status 200 OK")
 				assert.Equal(t, "Hello World!", string(body), "Expected response body 'Hello World!'")
 			} else {
@@ -56,7 +62,7 @@ func TestMain(t *testing.T) {
 				t.Fatalf("Failed to read response body: %v", err)
 			}
 
-			if i < 2 {
+			if i < conf.RequestsByIp {
 				assert.Equal(t, http.StatusOK, resp.StatusCode, "Expected status 200 OK")
 				assert.Equal(t, "Hello World!", string(body), "Expected response body 'Hello World!'")
 			} else {
@@ -67,8 +73,8 @@ func TestMain(t *testing.T) {
 	})
 
 	// Wait for the rate limit to reset
-	t.Log("Waiting 6 seconds to reset rate limit...")
-	time.Sleep(6 * time.Second)
+	t.Logf("Waiting %v seconds to reset rate limit...", conf.TimeBlockedByIp)
+	time.Sleep(time.Duration(conf.TimeBlockedByIp) * time.Second)
 
 	// Test without API_KEY (IP based rate limiting)
 	t.Run("IP Based Rate Limiting", func(t *testing.T) {
@@ -84,7 +90,7 @@ func TestMain(t *testing.T) {
 				t.Fatalf("Failed to read response body: %v", err)
 			}
 
-			if i < 2 {
+			if i < conf.RequestsByIp {
 				assert.Equal(t, http.StatusOK, resp.StatusCode, "Expected status 200 OK")
 				assert.Equal(t, "Hello World!", string(body), "Expected response body 'Hello World!'")
 			} else {
@@ -102,7 +108,7 @@ func setupRouter() *chi.Mux {
 
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Logger)
-	router.Use(rateLimiter.RateLimitHandler)
+	router.Use(rateLimiter.LimitHandler)
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello World!"))
