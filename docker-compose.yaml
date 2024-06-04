@@ -8,7 +8,34 @@ services:
       - '6379:6379'
     volumes:
       - redis_data:/data
+    networks:
+     - my-network
+
+  app:
+    container_name: rate-limiter
+    depends_on:
+      - redis
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    networks:
+      - my-network
+    environment:
+    -  PORT=8080
+    -  DB_HOST=localhost:6379
+    -  REQUESTS_IP=2
+    -  REQUESTS_TOKEN=5
+    -  TIME_BLOCKED_IP=5
+    -  TIME_BLOCKED_TOKEN=5
+    -  ALLOWED_TOKEN=token
+
 
 volumes:
   redis_data:
     driver: local
+
+networks:
+  my-network:
+    driver: bridge
