@@ -28,5 +28,5 @@ func main() {
 	})
 	
 	log.Println("Iniciando o servidor na porta "+ conf.Port)
-	http.ListenAndServe("127.0.0.1:"+conf.Port, router)
+	http.ListenAndServe(":8080", router) 
 }
