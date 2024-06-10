@@ -24,13 +24,12 @@ services:
       - my-network
     environment:
     -  PORT=8080
-    -  DB_HOST=localhost:6379
+    -  DB_HOST=redis:6379
     -  REQUESTS_IP=2
     -  REQUESTS_TOKEN=5
     -  TIME_BLOCKED_IP=5
     -  TIME_BLOCKED_TOKEN=5
     -  ALLOWED_TOKEN=token
-
 
 volumes:
   redis_data:
